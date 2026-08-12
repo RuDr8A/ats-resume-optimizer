@@ -36,7 +36,14 @@ async function registerUserController(req, res) {
             { expiresIn: '7d' }
         );
 
-        res.cookie('token', token, { httpOnly: true }); 
+        const cookieOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // false on localhost, true on production
+            sameSite: 'lax', // Required for cross-port communication on localhost
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days 
+        };
+
+        res.cookie('token', token, cookieOptions);
         
 
         return res.status(201).json({ 
@@ -81,7 +88,14 @@ async function loginUserController(req, res) {
             { expiresIn: '7d' }
         );
 
-        res.cookie("token", token, { httpOnly: true });
+        const cookieOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // false on localhost, true on production
+            sameSite: 'lax', // Required for cross-port communication on localhost
+            maxAge: 7 * 24 * 60 * 60 * 1000 
+        };
+
+        res.cookie('token', token, cookieOptions);
         
 
         return res.status(200).json({ 

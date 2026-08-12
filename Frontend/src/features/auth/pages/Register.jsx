@@ -1,17 +1,30 @@
-import  { useState } from 'react';
-import { Link } from 'react-router-dom';
-import './auth.form.scss'; // We reuse the exact same stylesheet!
+import  { useState} from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import './auth.form.scss'; 
+import { useAuth} from '../hooks/useAuth';
 
 const Register = () => {
-  // 1. Initialize state for all three inputs
+  const { loading, handleRegister } = useAuth(); 
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e) => {
+  const [error, setError] = useState(null); 
+  const navigate = useNavigate(); 
+
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Ready to send to backend (Register):", { username, email, password });
+    setError(null); 
+    
+    try {
+      await handleRegister({ username, email, password });
+      navigate('/dashboard'); 
+    } catch (err) {
+      
+      setError(err.response?.data?.message || "Error occurred during registration");
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -81,8 +94,8 @@ const Register = () => {
             </svg>
           </div>
           
-          <button type="submit" className="btn-login">
-            Register
+          <button type="submit" className="btn-login" disabled={loading}>
+            {loading ? <div className="spinner"></div> : "Register"}
           </button>
           
           <div className="register-link">

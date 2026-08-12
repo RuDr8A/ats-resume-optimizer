@@ -138,3 +138,25 @@
     }
   }
 }
+
+/* =========================================
+   LOADING SPINNER
+   ========================================= */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(0, 0, 0, 0.2); /* Light transparent border */
+  border-top-color: #333; /* Dark top border to match your button text */
+  border-radius: 50%;
+  animation: spin 1s linear infinite; /* Makes it rotate forever */
+  margin: 0 auto; /* Centers it in the button */
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

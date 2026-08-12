@@ -1,20 +1,38 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState} from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import './auth.form.scss';
+import { useAuth} from '../hooks/useAuth';
+
 
 const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  
-  // 1. New state to track if the password should be visible
-  const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e) => {
+  const { loading, handleLogin } = useAuth(); 
+  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  
+
+  const [error, setError] = useState(null); 
+  
+  const navigate = useNavigate(); 
+
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Ready to send to backend:", { username, password });
+    setError(null); 
+
+    try {
+      
+      await handleLogin({ email, password });
+      
+      navigate('/dashboard'); 
+      
+    } catch (err) {
+      setError(err.response?.data?.message || "Invalid email or password");
+    }
   };
 
-  // 2. Function to toggle the state when the eye icon is clicked
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -27,20 +45,20 @@ const Login = () => {
         <form onSubmit={handleSubmit}>
           <div className="input-group">
             <input 
-              type="text" 
-              placeholder="Username" 
+              type="email" 
+              placeholder="Email" 
               required 
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-            {/* User Icon SVG */}
+            {/* Envelope Icon SVG */}
             <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+              <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
             </svg>
           </div>
           
           <div className="input-group">
-            {/* 3. Change input type dynamically (text vs password) */}
+            {/* Change input type dynamically*/}
             <input 
               type={showPassword ? "text" : "password"} 
               placeholder="Password" 
@@ -49,12 +67,12 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
             
-            {/* 4. Clickable Eye Icon (Changes path based on state) */}
+            {/* Clickable Eye Icon */}
             <svg 
               viewBox="0 0 24 24" 
               fill="currentColor" 
               onClick={togglePasswordVisibility}
-              style={{ cursor: 'pointer' }} // Makes it feel clickable
+              style={{ cursor: 'pointer' }} 
             >
               {showPassword ? (
                 /* Eye Open SVG */
@@ -73,8 +91,8 @@ const Login = () => {
             <a href="#forgot">Forgot password?</a>
           </div>
           
-          <button type="submit" className="btn-login">
-            Login
+          <button type="submit" className="btn-login" disabled={loading}>
+            {loading ? <div className="spinner"></div> : "Login"}
           </button>
           
           <div className="register-link">
