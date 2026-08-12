@@ -51,7 +51,7 @@ const technicalQuestionSchema = new mongoose.Schema({
 const behavioralQuestionSchema = new mongoose.Schema({
     question: {
         type: String,
-        required: [ true, "Technical question is required" ]
+        required: [ true, "Bhavioral question is required" ]
     },
     intention: {
         type: String,
@@ -92,6 +92,8 @@ const preparationPlanSchema = new mongoose.Schema({
         type: String,
         required: [ true, "Task is required" ]
     } ]
+},{
+    _id : false
 })
 
 const interviewReportSchema = new mongoose.Schema({
