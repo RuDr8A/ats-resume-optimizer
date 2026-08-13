@@ -11,15 +11,15 @@ async function generateInterViewReportController(req, res) {
         if (!req.file) {
             return res.status(400).json({ message: "Resume file is required." });
         }
-        const { selfDescription, jobDescription, title } = req.body;
+        const { selfDescription, jobDescription } = req.body;
         const resumeContent = await (new pdfParse.PDFParse(Uint8Array.from(req.file.buffer))).getText()
         const resumeContentText = resumeContent.text;
 
         
 
-        if (!title || !selfDescription || !jobDescription) {
+        if (!selfDescription || !jobDescription) {
             return res.status(400).json({ 
-                message: "Please provide title, selfDescription, and jobDescription fields." 
+                message: "Please provide selfDescription and jobDescription fields." 
             });
         }
 
@@ -33,10 +33,9 @@ async function generateInterViewReportController(req, res) {
         const interviewReport = await interviewReportModel.create({
             user: req.user.id,
             resume: resumeContentText,
-            title, 
             selfDescription,
             jobDescription,
-            ...interViewReportByAi 
+            ...interViewReportByAi
         });
         
         console.log(interViewReportByAi)

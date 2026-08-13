@@ -38,7 +38,7 @@ export const useAuth = () => {
         }
     };
 
-    const handleLogout = async () => {
+    const Logout = async () => {
         setLoading(true);
         try {
             await logout();
@@ -50,5 +50,5 @@ export const useAuth = () => {
         }
     };
 
-    return { user, loading, handleRegister, handleLogin, handleLogout };
+    return { user, loading, handleRegister, handleLogin, Logout };
 };

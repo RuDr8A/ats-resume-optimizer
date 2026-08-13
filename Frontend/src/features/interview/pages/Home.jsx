@@ -2,18 +2,22 @@ import { useState } from 'react';
 import './Home.css';
 import { Link, useNavigate } from 'react-router-dom'; 
 import { useInterview } from '../hooks/useInterview.js';
+import { useAuth } from '../../auth/hooks/useAuth.js';
 const Home = () => {
+
+    const {user, Logout} = useAuth() ;
 
     const { loading: isLoading, generateReport } = useInterview();
     const navigate = useNavigate();
 
-    // Form States
+    
     const [jobDescription, setJobDescription] = useState('');
     const [selfDescription, setSelfDescription] = useState('');
     const [resumeFile, setResumeFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-    // Drag & Drop Handlers
+    
     const handleDragOver = (e) => {
         e.preventDefault();
         setIsDragging(true);
@@ -38,15 +42,24 @@ const Home = () => {
         }
     };
 
-    // 2. Cleaned up Submit Handler
+    const handleLogout = async () => {
+        try {
+        await Logout(); 
+        navigate('/login');
+        } catch (error) {
+            console.error("Failed to log out", error);
+        }
+    };
+
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!resumeFile) return alert("Please upload a resume first!");
 
-        // We use the 'resumeFile' directly from your state here!
+        
         const data = await generateReport({ jobDescription, selfDescription, resumeFile });
         
-        // If the report generates successfully, navigate to it
+        
         if (data && data._id) {
             navigate(`/interview/${data._id}`);
         } else {
@@ -68,12 +81,39 @@ const Home = () => {
                     </div>
                     <nav className="flex items-center gap-8">
                         <a href="#" className="transition-colors uppercase text-primary font-medium text-sm">Dashboard</a>
-                        <a href="#" className="text-xs font-medium text-on-surface-variant hover:text-primary transition-colors uppercase">Archive</a>
-                        <div className="flex items-center gap-6 ml-4 pl-6 border-l border-white/10">
-                            <a href="#" className="text-xs font-medium text-on-surface-variant hover:text-primary transition-colors uppercase">Sign Out</a>
-                            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                                <span className="material-symbols-outlined text-on-primary text-[18px]">person</span>
-                            </div>
+                        <Link to="/archive" className="text-xs font-medium text-on-surface-variant hover:text-primary transition-colors uppercase">Archive</Link>
+                        
+                        {/* PROFILE DROPDOWN */}
+                        <div className="relative flex items-center pl-6 border-l border-white/10">
+                            <button 
+                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                className="flex items-center gap-2 hover:bg-white/5 py-1.5 px-2 rounded-full transition-colors focus:outline-none"
+                            >
+                                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+                                    <span className="material-symbols-outlined text-on-primary text-[18px]">person</span>
+                                </div>
+                                <span className={`material-symbols-outlined text-on-surface-variant text-[16px] transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}>
+                                    expand_more
+                                </span>
+                            </button>
+
+                            {/* DROPDOWN MENU */}
+                            {isDropdownOpen && (
+                                <div className="absolute right-0 top-full mt-3 w-48 bg-[#0a0a0a]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl py-2 z-50 flex flex-col overflow-hidden origin-top-right transition-all">
+                                    <div className="px-4 py-3 border-b border-white/5 mb-1 bg-surface-container-low/30">
+                                        <p className="text-sm font-medium text-primary truncate">{user?.username || "User"}</p>
+                                        <p className="text-[10px] text-on-surface-variant uppercase tracking-wider mt-0.5">Active Session</p>
+                                    </div>
+                                    
+                                    <button
+                                        onClick={handleLogout}
+                                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-[#ffb4ab] hover:bg-[#ffb4ab]/10 transition-colors text-left w-full group"
+                                    >
+                                        <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform">logout</span>
+                                        Sign Out
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </nav>
                 </div>

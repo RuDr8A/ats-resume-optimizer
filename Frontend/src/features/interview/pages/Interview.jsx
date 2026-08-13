@@ -1,136 +1,38 @@
-
-import { Link } from 'react-router-dom';
-// import { useInterview } from '../../hooks/useInterview'; // Uncomment when connecting to backend
+import  { useEffect,useState } from 'react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useInterview } from '../hooks/useInterview';
+import PreparationPlan from './PreparationPlan'; 
+import { useAuth } from '../../auth/hooks/useAuth.js';
 
 const Interview = () => {
-    // const { report, loading } = useInterview(); // Uncomment when connecting to backend
 
-    // TEMPORARY DUMMY DATA FOR UI TESTING
-    const loading = false;
-    const report = {
-        matchScore: 55,
-        title: "Mid-Level Full Stack Developer (MERN)",
-        summary: "Comprehensive analysis of candidate fit, technical proficiency, and recommended preparation strategy based on the interview transcript.",
-        matchFactors: [
-            { text: "React, Node, MongoDB", type: "positive" },
-            { text: "Production experience", type: "negative" },
-            { text: "Cloud deployment", type: "negative" }
-        ],
-        skillGaps: [
-            { 
-                skill: "Professional Full-Stack Experience", 
-                severity: "high",
-                description: "Limited production evidence.",
-                action: "Build and deploy a full-stack project"
-            },
-            { 
-                skill: "Advanced State Management", 
-                severity: "medium",
-                description: "Struggled with complex state structures.",
-                action: "Implement global state in a test app"
-            },
-            { 
-                skill: "Professional Full-Stack Experience", 
-                severity: "high",
-                description: "Limited production evidence.",
-                action: "Build and deploy a full-stack project"
-            },
-            { 
-                skill: "Professional Full-Stack Experience", 
-                severity: "high",
-                description: "Limited production evidence.",
-                action: "Build and deploy a full-stack project"
-            }
-        ],
-        technicalQuestions: [
-            {
-                question: "Can you explain the difference between Redux and React Context API?",
-                intention: "To assess the candidate's understanding of state management.",
-                answer: "Context API is built into React and is ideal for low-frequency updates. Redux provides a centralized global store suitable for complex apps."
-            },
-            {
-                question: "Explain how you would optimize the performance of a React application.",
-                intention: "To test advanced React capabilities and performance optimization techniques.",
-                answer: "Use React.memo for component memoization, useMemo and useCallback hooks to cache expensive calculations, and implement virtualization for long lists."
-            },
-            { 
-                skill: "Professional Full-Stack Experience", 
-                severity: "high",
-                description: "Limited production evidence.",
-                action: "Build and deploy a full-stack project"
-            },
-            { 
-                skill: "Professional Full-Stack Experience", 
-                severity: "high",
-                description: "Limited production evidence.",
-                action: "Build and deploy a full-stack project"
-            }
-        ],
-        behavioralQuestions: [
-            {
-                question: "How do you handle receiving critical feedback on your code?",
-                intention: "To evaluate teamwork and adaptability.",
-                answer: "Express a growth-minded attitude, viewing code reviews as learning opportunities."
-            },
-            {
-                question: "Describe a situation where you had to learn a new technology quickly.",
-                intention: "To assess fast-learning capabilities and resourcefulness.",
-                answer: "I rely on active learning strategies, building MVPs, and reading official documentation rather than getting stuck in tutorial hell."
-            },
-            { 
-                skill: "Professional Full-Stack Experience", 
-                severity: "high",
-                description: "Limited production evidence.",
-                action: "Build and deploy a full-stack project"
-            },
-            { 
-                skill: "Professional Full-Stack Experience", 
-                severity: "high",
-                description: "Limited production evidence.",
-                action: "Build and deploy a full-stack project"
-            }
-        ],
-        preparationPlan: [
-            {
-                day: 1,
-                focus: "React State Management & Performance",
-                tasks: [
-                    "Study Redux Toolkit and implement a simple state store.",
-                    "Review React performance optimization APIs."
-                ]
-            },
-            {
-                day: 2,
-                focus: "Advanced Node.js & Backend Architecture",
-                tasks: [
-                    "Build a robust Express boilerplate incorporating centralized error handling.",
-                    "Practice modeling relationships in MongoDB."
-                ]
-            },
-            { 
-                skill: "Professional Full-Stack Experience", 
-                severity: "high",
-                description: "Limited production evidence.",
-                action: "Build and deploy a full-stack project"
-            },
-            { 
-                skill: "Professional Full-Stack Experience", 
-                severity: "high",
-                description: "Limited production evidence.",
-                action: "Build and deploy a full-stack project"
-            },{ 
-                skill: "Professional Full-Stack Experience", 
-                severity: "high",
-                description: "Limited production evidence.",
-                action: "Build and deploy a full-stack project"
-            }
-        ]
+    const navigate = useNavigate()
+
+    const {user, Logout } = useAuth() ;
+
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+    const handleLogout = async () => {
+        try {
+        await Logout(); 
+        navigate('/login');
+        } catch (error) {
+            console.error("Failed to log out", error);
+        }
     };
+    const { report, loading, getReportById } = useInterview(); 
+    const { interviewId } = useParams();
+
+    useEffect(() => {
+        if (interviewId && !report) {
+            getReportById(interviewId);
+        }
+    }, [interviewId, report, getReportById]);
 
     if (loading || !report) {
         return (
             <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-                <div className="flex flex-col items-center gap-4">
+                 <div className="flex flex-col items-center gap-4">
                     <svg className="animate-spin h-8 w-8 text-primary" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -140,9 +42,9 @@ const Interview = () => {
             </div>
         );
     }
-
+    
     // Dynamic Helpers
-    const strokeDashoffset = 283 - (283 * report.matchScore) / 100;
+    const strokeDashoffset = 283 - (283 * (report.matchScore || 0)) / 100;
 
     const getSeverityStyles = (severity) => {
         if (severity === 'high') return { border: 'border-[#ffb4ab]/30', bg: 'bg-[#ffb4ab]/5', iconBg: 'bg-[#ffb4ab]/10', text: 'text-[#ffb4ab]', icon: 'priority_high' };
@@ -160,22 +62,46 @@ const Interview = () => {
                         <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                             <span className="material-symbols-outlined text-surface text-[20px]">analytics</span>
                         </div>
-                        <span className="font-headline-md text-2xl tracking-tight text-primary ml-3 font-medium">ReportAI</span>
+                        <span className="font-headline-md text-2xl tracking-tight text-primary ml-3 font-medium"><Link to = "/dashboard">Resume Optimizer</Link></span>
                     </div>
                     
                     <nav className="hidden md:flex items-center gap-8">
                         <Link to="/dashboard" className="text-xs font-medium text-on-surface-variant hover:text-primary transition-colors uppercase">Dashboard</Link>
-                        <a href="#" className="text-xs font-medium text-on-surface-variant hover:text-primary transition-colors uppercase">Interviews</a>
-                        <a href="#" className="text-xs font-medium text-on-surface-variant hover:text-primary transition-colors uppercase">Archive</a>
+                        
+                        <Link to="/archive" className="text-xs font-medium text-on-surface-variant hover:text-primary transition-colors uppercase">Archive</Link>
                     </nav>
 
-                    <div className="flex items-center pl-6 border-l border-white/10 cursor-pointer group">
-                        <button className="flex items-center gap-2 hover:bg-white/5 py-1 px-2 rounded-full transition-colors">
-                            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                    {/* PROFILE DROPDOWN */}
+                    <div className="relative flex items-center pl-6 border-l border-white/10">
+                        <button 
+                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                            className="flex items-center gap-2 hover:bg-white/5 py-1.5 px-2 rounded-full transition-colors focus:outline-none"
+                        >
+                            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
                                 <span className="material-symbols-outlined text-on-primary text-[18px]">person</span>
                             </div>
-                            <span className="material-symbols-outlined text-on-surface-variant text-[16px]">expand_more</span>
+                            <span className={`material-symbols-outlined text-on-surface-variant text-[16px] transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}>
+                                expand_more
+                            </span>
                         </button>
+
+                        {/* DROPDOWN MENU */}
+                        {isDropdownOpen && (
+                            <div className="absolute right-0 top-full mt-3 w-48 bg-[#0a0a0a]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl py-2 z-50 flex flex-col overflow-hidden origin-top-right transition-all">
+                                <div className="px-4 py-3 border-b border-white/5 mb-1 bg-surface-container-low/30">
+                                    <p className="text-sm font-medium text-primary truncate">{user?.username || user?.name || "User"}</p>
+                                    <p className="text-[10px] text-on-surface-variant uppercase tracking-wider mt-0.5">Active Session</p>
+                                </div>
+                                
+                                <button
+                                    onClick={handleLogout}
+                                    className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-[#ffb4ab] hover:bg-[#ffb4ab]/10 transition-colors text-left w-full group"
+                                >
+                                    <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform">logout</span>
+                                    Sign Out
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             </header>
@@ -204,9 +130,12 @@ const Interview = () => {
                             
                             <div className="flex flex-col gap-2">
                                 <h1 className="text-3xl lg:text-4xl font-semibold text-primary m-0">{report.title}</h1>
-                                <p className="text-base text-on-surface-variant max-w-2xl m-0 leading-relaxed">
-                                    {report.summary}
-                                </p>
+                                {/* Conditionally Render Summary */}
+                                {report.summary && (
+                                    <p className="text-base text-on-surface-variant max-w-2xl m-0 leading-relaxed">
+                                        {report.summary}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="flex flex-wrap items-center gap-4 mt-2">
@@ -214,7 +143,6 @@ const Interview = () => {
                                     <span className="material-symbols-outlined text-[20px]">download</span>
                                     Download PDF
                                 </button>
-                                {/* Restored Share Report Button */}
                                 <button className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 text-on-surface rounded-lg font-medium text-sm hover:bg-white/10 transition-colors">
                                     <span className="material-symbols-outlined text-[20px]">share</span>
                                     Share Report
@@ -224,19 +152,22 @@ const Interview = () => {
                         
                         {/* Match Score & Breakdown Indicator */}
                         <div className="z-10 flex flex-col sm:flex-row items-center gap-8 shrink-0 w-full lg:w-2/5 justify-end">
-                            <div className="flex flex-col gap-3 bg-black/40 p-5 rounded-xl border border-white/5 w-full sm:w-auto">
-                                <h3 className="text-xs font-bold text-primary/70 uppercase tracking-widest mb-1">Match Breakdown</h3>
-                                <div className="flex flex-col gap-2">
-                                    {report.matchFactors.map((factor, idx) => (
-                                        <div key={idx} className="flex items-start gap-2">
-                                            <span className={`material-symbols-outlined text-[16px] mt-0.5 ${factor.type === 'positive' ? 'text-green-400' : 'text-red-400'}`}>
-                                                {factor.type === 'positive' ? 'add_circle' : 'do_not_disturb_on'}
-                                            </span>
-                                            <span className="text-sm text-on-surface-variant">{factor.text}</span>
-                                        </div>
-                                    ))}
+                            {/* Conditionally Render Match Breakdown Box */}
+                            {report.matchFactors && report.matchFactors.length > 0 && (
+                                <div className="flex flex-col gap-3 bg-black/40 p-5 rounded-xl border border-white/5 w-full sm:w-auto">
+                                    <h3 className="text-xs font-bold text-primary/70 uppercase tracking-widest mb-1">Match Breakdown</h3>
+                                    <div className="flex flex-col gap-2">
+                                        {report.matchFactors.map((factor, idx) => (
+                                            <div key={idx} className="flex items-start gap-2">
+                                                <span className={`material-symbols-outlined text-[16px] mt-0.5 ${factor.type === 'positive' ? 'text-green-400' : 'text-red-400'}`}>
+                                                    {factor.type === 'positive' ? 'add_circle' : 'do_not_disturb_on'}
+                                                </span>
+                                                <span className="text-sm text-on-surface-variant">{factor.text}</span>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                             
                             <div className="relative w-40 h-40 flex items-center justify-center shrink-0">
                                 <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
@@ -257,14 +188,14 @@ const Interview = () => {
                         {/* LEFT COLUMN */}
                         <div className="lg:col-span-1 flex flex-col gap-8">
                             
-                            {/* Skill Gaps (Scrollable) */}
+                            {/* Skill Gaps */}
                             <div className="bg-surface-container-low/60 backdrop-blur-xl rounded-xl p-8 border border-white/10 flex flex-col max-h-[500px]">
                                 <div className="flex items-center justify-between shrink-0 mb-6 pb-4 border-b border-white/5">
                                     <h2 className="text-xl font-semibold text-primary m-0">Skill Gaps Identified</h2>
                                     <span className="material-symbols-outlined text-on-surface-variant">warning</span>
                                 </div>
                                 <div className="flex flex-col gap-4 overflow-y-auto no-scrollbar pb-2 pr-2">
-                                    {report.skillGaps.map((gap, index) => {
+                                    {report.skillGaps?.map((gap, index) => {
                                         const styles = getSeverityStyles(gap.severity);
                                         return (
                                             <div key={index} className={`flex flex-col gap-3 p-4 rounded-lg border ${styles.border} ${styles.bg}`}>
@@ -277,12 +208,17 @@ const Interview = () => {
                                                         <span className={`text-[10px] font-bold ${styles.text} uppercase tracking-wider`}>{gap.severity} Severity</span>
                                                     </div>
                                                 </div>
+                                                {/* Conditionally Render Description and Action */}
                                                 <div className="pl-11 flex flex-col gap-2">
-                                                    <p className="text-sm text-on-surface-variant/80 m-0">{gap.description}</p>
-                                                    <div className="flex items-center gap-1.5 text-xs text-primary/90 bg-white/5 p-2 rounded w-fit">
-                                                        <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-                                                        <span>Action: {gap.action}</span>
-                                                    </div>
+                                                    {gap.description && (
+                                                        <p className="text-sm text-on-surface-variant/80 m-0">{gap.description}</p>
+                                                    )}
+                                                    {gap.action && (
+                                                        <div className="flex items-center gap-1.5 text-xs text-primary/90 bg-white/5 p-2 rounded w-fit">
+                                                            <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                                                            <span>Action: {gap.action}</span>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </div>
                                         );
@@ -290,42 +226,15 @@ const Interview = () => {
                                 </div>
                             </div>
 
-                            {/* Preparation Plan (Scrollable) */}
-                            <div className="bg-surface-container-low/60 backdrop-blur-xl rounded-xl p-8 border border-white/10 flex flex-col max-h-[600px]">
-                                <div className="flex items-center justify-between shrink-0 mb-6 pb-4 border-b border-white/5">
-                                    <h2 className="text-xl font-semibold text-primary m-0">Preparation Plan</h2>
-                                    <span className="text-xs text-on-surface-variant font-medium">0/{report.preparationPlan.length} complete</span>
-                                </div>
-                                <div className="relative pl-6 border-l border-white/10 flex flex-col gap-8 overflow-y-auto no-scrollbar pb-4">
-                                    {report.preparationPlan.map((plan, index) => (
-                                        <div key={index} className="relative">
-                                            <div className="absolute -left-[31px] top-1 w-3 h-3 rounded-full bg-primary ring-4 ring-surface-container-low"></div>
-                                            <div className="flex flex-col gap-3">
-                                                <div>
-                                                    <span className="text-xs font-bold text-primary/60 uppercase tracking-widest block mb-1">Day {plan.day}</span>
-                                                    <h3 className="text-base text-primary font-medium m-0">{plan.focus}</h3>
-                                                </div>
-                                                <ul className="flex flex-col gap-3 m-0 p-0 list-none">
-                                                    {plan.tasks.map((task, tIndex) => (
-                                                        <li key={tIndex} className="flex items-start gap-3 text-sm text-on-surface-variant cursor-pointer hover:text-primary transition-colors group">
-                                                            <span className="material-symbols-outlined text-[20px] text-on-surface-variant/50 shrink-0 mt-0.5 group-hover:text-primary transition-colors">
-                                                                radio_button_unchecked
-                                                            </span>
-                                                            {task}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+                            
+                            {/* Preparation Plan */}
+                            <PreparationPlan planData={report.preparationPlan} interviewId={interviewId} />
                         </div>
 
                         {/* RIGHT COLUMN */}
                         <div className="lg:col-span-2 flex flex-col gap-8">
                             
-                            {/* Technical Assessment (Scrollable) */}
+                            {/* Technical Assessment */}
                             <div className="bg-surface-container-low/60 backdrop-blur-xl rounded-xl p-8 border border-white/10 flex flex-col max-h-[600px]">
                                 <div className="flex items-center gap-4 pb-4 border-b border-white/5 justify-between shrink-0 mb-4">
                                     <div className="flex items-center gap-4">
@@ -337,7 +246,7 @@ const Interview = () => {
                                     <span className="px-3 py-1 bg-white/5 rounded text-xs font-medium text-on-surface-variant tracking-wider uppercase">Technical</span>
                                 </div>
                                 <div className="flex flex-col gap-8 overflow-y-auto no-scrollbar pr-4 pb-4">
-                                    {report.technicalQuestions.map((q, index) => (
+                                    {report.technicalQuestions?.map((q, index) => (
                                         <div key={index} className="flex flex-col gap-4">
                                             <div className="flex flex-col gap-2">
                                                 <div className="flex items-start gap-3">
@@ -360,7 +269,7 @@ const Interview = () => {
                                 </div>
                             </div>
 
-                            {/* Behavioral Assessment (Scrollable) */}
+                            {/* Behavioral Assessment */}
                             <div className="bg-surface-container-low/60 backdrop-blur-xl rounded-xl p-8 border border-white/10 flex flex-col max-h-[600px]">
                                 <div className="flex items-center gap-4 pb-4 border-b border-white/5 justify-between shrink-0 mb-4">
                                     <div className="flex items-center gap-4">
@@ -372,7 +281,7 @@ const Interview = () => {
                                     <span className="px-3 py-1 bg-white/5 rounded text-xs font-medium text-on-surface-variant tracking-wider uppercase">Behavioral</span>
                                 </div>
                                 <div className="flex flex-col gap-8 overflow-y-auto no-scrollbar pr-4 pb-4">
-                                    {report.behavioralQuestions.map((q, index) => (
+                                    {report.behavioralQuestions?.map((q, index) => (
                                         <div key={index} className="flex flex-col gap-4">
                                             <div className="flex flex-col gap-2">
                                                 <div className="flex items-start gap-3">

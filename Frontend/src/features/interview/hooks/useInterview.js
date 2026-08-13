@@ -15,10 +15,10 @@ export const useInterview = () => {
 
     const { loading, setLoading, report, setReport, reports, setReports } = context;
 
-    const generateReport = useCallback(async ({ jobDescription, selfDescription, resumeFile }) => {
+    const generateReport = useCallback(async ({jobDescription, selfDescription, resumeFile }) => {
         setLoading(true);
         try {
-            const response = await generateInterviewReport({ jobDescription, selfDescription, resumeFile });
+            const response = await generateInterviewReport({  jobDescription, selfDescription, resumeFile });
             setReport(response.interviewReport);
             return response.interviewReport;
         } catch (error) {
