@@ -1,0 +1,27 @@
+# ==========================================
+# ATS Resume Optimizer - Requirements
+# Note: Use `npm install` in respective directories.
+# ==========================================
+
+# Backend (Node.js) Dependencies
+express
+mongoose
+dotenv
+cors
+cookie-parser
+jsonwebtoken
+bcrypt
+multer
+pdf-parse
+puppeteer
+@google/genai
+zod
+zod-to-json-schema
+
+# Frontend (React/Vite) Dependencies
+react
+react-dom
+react-router-dom
+axios
+tailwindcss
+vite
