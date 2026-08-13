@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-// FIX: Imported the blacklist model to actually enforce the logout blacklist
 const blacklistTokenModel = require('../models/blacklist.model');
 
 async function authUser(req, res, next) {

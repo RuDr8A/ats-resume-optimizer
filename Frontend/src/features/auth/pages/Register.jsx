@@ -10,6 +10,7 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
+  // eslint-disable-next-line no-unused-vars
   const [error, setError] = useState(null); 
   const navigate = useNavigate(); 
 
