@@ -739,72 +739,42 @@ The preparation plan is then generated around the identified gaps.
 
 This project demonstrates practical implementation of:
 
-### Full-Stack Development
+```mermaid
+flowchart TD
 
-```text
-React
-   ↓
-REST APIs
-   ↓
-Express
-   ↓
-MongoDB
-```
+    A["Full-Stack Development"]
+    A1["React"] --> A2["REST APIs"]
+    A2 --> A3["Express"]
+    A3 --> A4["MongoDB"]
+    A --> A1
 
-### AI Integration
+    B["AI Integration"]
+    B1["User Data"] --> B2["Prompt Engineering"]
+    B2 --> B3["Gemini"]
+    B3 --> B4["Structured JSON"]
+    B4 --> B5["MongoDB"]
+    B --> B1
 
-```text
-User Data
-   ↓
-Prompt Engineering
-   ↓
-Gemini
-   ↓
-Structured JSON
-   ↓
-MongoDB
-```
+    C["Authentication"]
+    C1["Credentials"] --> C2["bcrypt"]
+    C2 --> C3["JWT"]
+    C3 --> C4["HTTP-only Cookie"]
+    C4 --> C5["Protected Routes"]
+    C --> C1
 
-### Authentication
+    D["Document Processing"]
+    D1["PDF Upload"] --> D2["Multer"]
+    D2 --> D3["PDF Parsing"]
+    D3 --> D4["Resume Text"]
+    D4 --> D5["AI Analysis"]
+    D --> D1
 
-```text
-Credentials
-   ↓
-bcrypt
-   ↓
-JWT
-   ↓
-HTTP-only Cookie
-   ↓
-Protected Routes
-```
-
-### Document Processing
-
-```text
-PDF Upload
-   ↓
-Multer
-   ↓
-PDF Parsing
-   ↓
-Resume Text
-   ↓
-AI Analysis
-```
-
-### PDF Generation
-
-```text
-Resume Data
-   ↓
-HTML/CSS
-   ↓
-Puppeteer
-   ↓
-Chromium
-   ↓
-PDF
+    E["PDF Generation"]
+    E1["Resume Data"] --> E2["HTML/CSS"]
+    E2 --> E3["Puppeteer"]
+    E3 --> E4["Chromium"]
+    E4 --> E5["PDF"]
+    E --> E1
 ```
 
 ---
