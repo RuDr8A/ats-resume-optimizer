@@ -161,20 +161,15 @@ The backend uses **Puppeteer** to render the resume into a controlled HTML/CSS l
 
 ### Pipeline
 
-```text
-Resume Data
-     ↓
-Resume Template
-     ↓
-HTML + CSS
-     ↓
-Puppeteer
-     ↓
-Headless Chromium
-     ↓
-PDF Buffer
-     ↓
-Downloadable Resume
+```mermaid
+flowchart TD
+    A["Resume Data"]
+    A --> B["Resume Template"]
+    B --> C["HTML + CSS"]
+    C --> D["Puppeteer"]
+    D --> E["Headless Chromium"]
+    E --> F["PDF Buffer"]
+    F --> G["Downloadable Resume"]
 ```
 
 This provides consistent PDF rendering without relying on client-side browser printing.
@@ -196,22 +191,16 @@ The application uses:
 
 Authentication flow:
 
-```text
-User
- ↓
-Login / Register
- ↓
-Password Verification
- ↓
-JWT Generation
- ↓
-HTTP-only Cookie
- ↓
-Protected API Request
- ↓
-Authentication Middleware
- ↓
-req.user
+```mermaid
+flowchart TD
+    A["User"]
+    A --> B["Login / Register"]
+    B --> C["Password Verification"]
+    C --> D["JWT Generation"]
+    D --> E["HTTP-only Cookie"]
+    E --> F["Protected API Request"]
+    F --> G["Authentication Middleware"]
+    G --> H["req.user"]
 ```
 
 ---
