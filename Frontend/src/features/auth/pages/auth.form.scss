@@ -6,8 +6,7 @@
   align-items: center;
   min-height: 100vh;
   padding: 0 20px;
-  /* Dark placeholder background to make the glass effect visible. 
-     You can replace this URL with your preferred image */
+  /* Dark placeholder background to make the glass effect visible. */
   background: url('https://images.unsplash.com/photo-1638864616275-9f0b291a2eb6?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2ltcGxlJTIwZGFyayUyMHRoZW1lfGVufDB8fDB8fHww') no-repeat center center/cover;
 
   .login-card {
@@ -139,9 +138,8 @@
   }
 }
 
-/* =========================================
-   LOADING SPINNER
-   ========================================= */
+/* 
+   LOADING SPINNER*/
 .spinner {
   width: 20px;
   height: 20px;

@@ -4,13 +4,6 @@
 
 
 
-
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 html, 
 body {
     width: 100%;
@@ -19,3 +12,33 @@ body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
+@media print {
+    body {
+        /* Tells the browser to keep original colors and backgrounds */
+        -webkit-print-color-adjust: exact !important; /* Safari and Chrome/Edge */
+        print-color-adjust: exact !important;         /* Firefox and W3C standard */
+    }
+
+    /* Hide all headers, navigation, and buttons */
+    header, button, nav, .sticky {
+        display: none !important;
+    }
+
+    /* Modified: Only target specific text/elements if needed, 
+       do NOT force global #ffffff background anymore */
+    html {
+        box-shadow: none !important;
+    }
+
+    /* Unroll scrollable containers so all content prints */
+    .overflow-y-auto, .no-scrollbar {
+        max-height: none !important;
+        overflow: visible !important;
+    }
+
+    /* Stack grid elements vertically */
+    .grid {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+}

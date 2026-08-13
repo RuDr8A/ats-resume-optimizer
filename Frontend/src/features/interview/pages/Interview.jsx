@@ -5,24 +5,58 @@ import PreparationPlan from './PreparationPlan';
 import { useAuth } from '../../auth/hooks/useAuth.js';
 
 const Interview = () => {
-
-    const navigate = useNavigate()
-
-    const {user, Logout } = useAuth() ;
+    
+    const navigate = useNavigate();
+    const { interviewId } = useParams();
+    const { user, Logout } = useAuth();
+    const { report, loading, getReportById, getResumePdf } = useInterview(); 
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isGeneratingResume, setIsGeneratingResume] = useState(false);
+    const [copied, setCopied] = useState(false);
+
+   
+    const handleGenerateResume = async () => {
+        if (!interviewId) return;
+        setIsGeneratingResume(true);
+        await getResumePdf(interviewId);
+        setIsGeneratingResume(false);
+    };
+
+    const handleDownloadPDF = () => {
+        window.print();
+    };
+
+    const handleShareReport = async () => {
+        const shareData = {
+            title: report?.title || 'Interview Report',
+            text: 'Check out my AI-generated interview prep report!',
+            url: window.location.href,
+        };
+
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                console.log('Error sharing:', err);
+            }
+        } else {
+            navigator.clipboard.writeText(window.location.href);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2500); 
+        }
+    };
 
     const handleLogout = async () => {
         try {
-        await Logout(); 
-        navigate('/login');
+            await Logout(); 
+            navigate('/login');
         } catch (error) {
             console.error("Failed to log out", error);
         }
     };
-    const { report, loading, getReportById } = useInterview(); 
-    const { interviewId } = useParams();
 
+    
     useEffect(() => {
         if (interviewId && !report) {
             getReportById(interviewId);
@@ -58,50 +92,55 @@ const Interview = () => {
             {/* HEADER - Sticky */}
             <header className="sticky top-0 w-full z-50 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/10">
                 <div className="h-16 w-full px-8 flex items-center justify-between max-w-7xl mx-auto">
+                    {/* Logo on the far left */}
                     <div className="flex items-center gap-1">
                         <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                             <span className="material-symbols-outlined text-surface text-[20px]">analytics</span>
                         </div>
-                        <span className="font-headline-md text-2xl tracking-tight text-primary ml-3 font-medium"><Link to = "/dashboard">Resume Optimizer</Link></span>
+                        <span className="font-headline-md text-2xl tracking-tight text-primary ml-3 font-medium">
+                            <Link to="/dashboard">Resume Optimizer</Link>
+                        </span>
                     </div>
                     
-                    <nav className="hidden md:flex items-center gap-8">
-                        <Link to="/dashboard" className="text-xs font-medium text-on-surface-variant hover:text-primary transition-colors uppercase">Dashboard</Link>
-                        
-                        <Link to="/archive" className="text-xs font-medium text-on-surface-variant hover:text-primary transition-colors uppercase">Archive</Link>
-                    </nav>
+                    {/* RIGHT SIDE GROUP: Nav Links + Profile Dropdown grouped together */}
+                    <div className="flex items-center gap-8">
+                        <nav className="hidden md:flex items-center gap-6">
+                            <Link to="/dashboard" className="text-xs font-medium text-on-surface-variant hover:text-primary transition-colors uppercase">Dashboard</Link>
+                            <Link to="/archive" className="text-xs font-medium text-on-surface-variant hover:text-primary transition-colors uppercase">Archive</Link>
+                        </nav>
 
-                    {/* PROFILE DROPDOWN */}
-                    <div className="relative flex items-center pl-6 border-l border-white/10">
-                        <button 
-                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                            className="flex items-center gap-2 hover:bg-white/5 py-1.5 px-2 rounded-full transition-colors focus:outline-none"
-                        >
-                            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
-                                <span className="material-symbols-outlined text-on-primary text-[18px]">person</span>
-                            </div>
-                            <span className={`material-symbols-outlined text-on-surface-variant text-[16px] transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}>
-                                expand_more
-                            </span>
-                        </button>
-
-                        {/* DROPDOWN MENU */}
-                        {isDropdownOpen && (
-                            <div className="absolute right-0 top-full mt-3 w-48 bg-[#0a0a0a]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl py-2 z-50 flex flex-col overflow-hidden origin-top-right transition-all">
-                                <div className="px-4 py-3 border-b border-white/5 mb-1 bg-surface-container-low/30">
-                                    <p className="text-sm font-medium text-primary truncate">{user?.username || user?.name || "User"}</p>
-                                    <p className="text-[10px] text-on-surface-variant uppercase tracking-wider mt-0.5">Active Session</p>
+                        {/* PROFILE DROPDOWN */}
+                        <div className="relative flex items-center pl-6 border-l border-white/10">
+                            <button 
+                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                className="flex items-center gap-2 hover:bg-white/5 py-1.5 px-2 rounded-full transition-colors focus:outline-none"
+                            >
+                                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+                                    <span className="material-symbols-outlined text-on-primary text-[18px]">person</span>
                                 </div>
-                                
-                                <button
-                                    onClick={handleLogout}
-                                    className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-[#ffb4ab] hover:bg-[#ffb4ab]/10 transition-colors text-left w-full group"
-                                >
-                                    <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform">logout</span>
-                                    Sign Out
-                                </button>
-                            </div>
-                        )}
+                                <span className={`material-symbols-outlined text-on-surface-variant text-[16px] transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}>
+                                    expand_more
+                                </span>
+                            </button>
+
+                            {/* DROPDOWN MENU */}
+                            {isDropdownOpen && (
+                                <div className="absolute right-0 top-full mt-3 w-48 bg-[#0a0a0a]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl py-2 z-50 flex flex-col overflow-hidden origin-top-right transition-all">
+                                    <div className="px-4 py-3 border-b border-white/5 mb-1 bg-surface-container-low/30">
+                                        <p className="text-sm font-medium text-primary truncate">{user?.username || user?.name || "User"}</p>
+                                        <p className="text-[10px] text-on-surface-variant uppercase tracking-wider mt-0.5">Active Session</p>
+                                    </div>
+                                    
+                                    <button
+                                        onClick={handleLogout}
+                                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-[#ffb4ab] hover:bg-[#ffb4ab]/10 transition-colors text-left w-full group"
+                                    >
+                                        <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform">logout</span>
+                                        Sign Out
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </header>
@@ -137,15 +176,48 @@ const Interview = () => {
                                     </p>
                                 )}
                             </div>
-
                             <div className="flex flex-wrap items-center gap-4 mt-2">
-                                <button className="flex items-center gap-2 px-6 py-3 bg-primary text-surface rounded-lg font-medium text-sm hover:bg-primary/90 transition-colors">
-                                    <span className="material-symbols-outlined text-[20px]">download</span>
-                                    Download PDF
+                                
+                                {/* 1. Generate ATS Resume Button  */}
+                                <button 
+                                    onClick={handleGenerateResume}
+                                    disabled={isGeneratingResume}
+                                    className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium text-sm transition-colors cursor-pointer ${isGeneratingResume ? 'bg-primary/50 text-surface cursor-not-allowed' : 'bg-primary text-surface hover:bg-primary/90'}`}
+                                >
+                                    {isGeneratingResume ? (
+                                        <>
+                                            <svg className="animate-spin h-5 w-5 text-surface" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Generating PDF...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <span className="material-symbols-outlined text-[20px]">document_scanner</span>
+                                            Generate ATS Resume
+                                        </>
+                                    )}
                                 </button>
-                                <button className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 text-on-surface rounded-lg font-medium text-sm hover:bg-white/10 transition-colors">
-                                    <span className="material-symbols-outlined text-[20px]">share</span>
-                                    Share Report
+
+                                {/* 2. Download Report PDF Button (Secondary) */}
+                                <button 
+                                    onClick={handleDownloadPDF}
+                                    className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 text-on-surface rounded-lg font-medium text-sm hover:bg-white/10 transition-colors cursor-pointer"
+                                >
+                                    <span className="material-symbols-outlined text-[20px]">download</span>
+                                    Report PDF
+                                </button>
+                                
+                                {/* 3. Share Report Button (Secondary) */}
+                                <button 
+                                    onClick={handleShareReport}
+                                    className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 text-on-surface rounded-lg font-medium text-sm hover:bg-white/10 transition-colors cursor-pointer relative"
+                                >
+                                    <span className="material-symbols-outlined text-[20px]">
+                                        {copied ? 'check' : 'share'}
+                                    </span>
+                                    {copied ? 'Link Copied!' : 'Share Report'}
                                 </button>
                             </div>
                         </div>

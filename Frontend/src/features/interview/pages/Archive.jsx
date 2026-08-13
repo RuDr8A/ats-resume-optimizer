@@ -39,6 +39,7 @@ const Archive = () => {
             {/* HEADER - Consistent with your other pages */}
             <header className="sticky top-0 w-full z-50 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/10">
                 <div className="h-16 w-full px-8 flex items-center justify-between max-w-7xl mx-auto">
+                    {/* Logo on the far left */}
                     <div className="flex items-center gap-1">
                         <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                             <span className="material-symbols-outlined text-surface text-[20px]">analytics</span>
@@ -48,42 +49,45 @@ const Archive = () => {
                         </span>
                     </div>
                     
-                    <nav className="hidden md:flex items-center gap-8">
-                        <Link to="/dashboard" className="text-xs font-medium text-on-surface-variant hover:text-primary transition-colors uppercase">Dashboard</Link>
-                        <Link to="/archive" className="text-xs font-medium text-primary transition-colors uppercase">Archive</Link>
-                    </nav>
+                    {/* RIGHT SIDE GROUP: Nav Links + Profile Dropdown grouped together */}
+                    <div className="flex items-center gap-8">
+                        <nav className="hidden md:flex items-center gap-6">
+                            <Link to="/dashboard" className="text-xs font-medium text-on-surface-variant hover:text-primary transition-colors uppercase">Dashboard</Link>
+                            <Link to="/archive" className="text-xs font-medium text-on-surface-variant hover:text-primary transition-colors uppercase">Archive</Link>
+                        </nav>
 
-                    {/* PROFILE DROPDOWN */}
-                    <div className="relative flex items-center pl-6 border-l border-white/10">
-                        <button 
-                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                            className="flex items-center gap-2 hover:bg-white/5 py-1.5 px-2 rounded-full transition-colors focus:outline-none"
-                        >
-                            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
-                                <span className="material-symbols-outlined text-on-primary text-[18px]">person</span>
-                            </div>
-                            <span className={`material-symbols-outlined text-on-surface-variant text-[16px] transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}>
-                                expand_more
-                            </span>
-                        </button>
-
-                        {/* DROPDOWN MENU */}
-                        {isDropdownOpen && (
-                            <div className="absolute right-0 top-full mt-3 w-48 bg-[#0a0a0a]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl py-2 z-50 flex flex-col overflow-hidden origin-top-right transition-all">
-                                <div className="px-4 py-3 border-b border-white/5 mb-1 bg-surface-container-low/30">
-                                    <p className="text-sm font-medium text-primary truncate">{user?.username || "User"}</p>
-                                    <p className="text-[10px] text-on-surface-variant uppercase tracking-wider mt-0.5">Active Session</p>
+                        {/* PROFILE DROPDOWN */}
+                        <div className="relative flex items-center pl-6 border-l border-white/10">
+                            <button 
+                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                className="flex items-center gap-2 hover:bg-white/5 py-1.5 px-2 rounded-full transition-colors focus:outline-none"
+                            >
+                                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0">
+                                    <span className="material-symbols-outlined text-on-primary text-[18px]">person</span>
                                 </div>
-                                
-                                <button
-                                    onClick={handleLogout}
-                                    className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-[#ffb4ab] hover:bg-[#ffb4ab]/10 transition-colors text-left w-full group"
-                                >
-                                    <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform">logout</span>
-                                    Sign Out
-                                </button>
-                            </div>
-                        )}
+                                <span className={`material-symbols-outlined text-on-surface-variant text-[16px] transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}>
+                                    expand_more
+                                </span>
+                            </button>
+
+                            {/* DROPDOWN MENU */}
+                            {isDropdownOpen && (
+                                <div className="absolute right-0 top-full mt-3 w-48 bg-[#0a0a0a]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl py-2 z-50 flex flex-col overflow-hidden origin-top-right transition-all">
+                                    <div className="px-4 py-3 border-b border-white/5 mb-1 bg-surface-container-low/30">
+                                        <p className="text-sm font-medium text-primary truncate">{user?.username || user?.name || "User"}</p>
+                                        <p className="text-[10px] text-on-surface-variant uppercase tracking-wider mt-0.5">Active Session</p>
+                                    </div>
+                                    
+                                    <button
+                                        onClick={handleLogout}
+                                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-[#ffb4ab] hover:bg-[#ffb4ab]/10 transition-colors text-left w-full group"
+                                    >
+                                        <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-1 transition-transform">logout</span>
+                                        Sign Out
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </header>
@@ -143,7 +147,7 @@ const Archive = () => {
                                     </div>
 
                                     <div className="flex flex-col gap-2 flex-1 mb-8">
-                                        {/* Assuming your backend saves the job title/description */}
+                                        
                                         <h3 className="text-lg font-medium text-primary m-0 line-clamp-2 leading-snug">
                                             {report.jobDescription || "Software Engineer Role"}
                                         </h3>

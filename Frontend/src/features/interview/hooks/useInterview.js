@@ -3,7 +3,8 @@ import { InterviewContext } from "../interview.context";
 import { 
     getAllInterviewReports, 
     generateInterviewReport, 
-    getInterviewReportById 
+    getInterviewReportById,
+    generateResumePdf
 } from "../services/interview.api";
 
 export const useInterview = () => {
@@ -23,7 +24,7 @@ export const useInterview = () => {
             return response.interviewReport;
         } catch (error) {
             console.error("Failed to generate report:", error);
-            return null; // Safely return null if the API fails
+            return null; 
         } finally {
             setLoading(false);
         }
@@ -51,11 +52,36 @@ export const useInterview = () => {
             return response.interviewReports;
         } catch (error) {
             console.error("Failed to fetch all reports:", error);
-            return []; // Safely return an empty array on failure
+            return []; 
         } finally {
             setLoading(false);
         }
     }, [setLoading, setReports]);
+
+    const getResumePdf = useCallback(async (interviewReportId) => {
+        
+        
+        try {
+            const response = await generateResumePdf({ interviewReportId });
+            
+           
+            const url = window.URL.createObjectURL(new Blob([response], { type: "application/pdf" }));
+            const link = document.createElement("a");
+            
+            link.href = url;
+            link.setAttribute("download", `resume_${interviewReportId}.pdf`);
+            
+            
+            document.body.appendChild(link);
+            link.click();
+            link.remove(); 
+            window.URL.revokeObjectURL(url); 
+            
+        } catch (error) {
+            console.error("Failed to download resume PDF:", error);
+            alert("Failed to generate your ATS Resume. Please try again.");
+        } 
+    }, []);
 
     return { 
         loading, 
@@ -63,6 +89,7 @@ export const useInterview = () => {
         reports, 
         generateReport, 
         getReportById, 
-        getReports 
+        getReports ,
+        getResumePdf
     };
 };

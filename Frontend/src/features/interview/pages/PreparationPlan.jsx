@@ -73,7 +73,7 @@ const PreparationPlan = ({ planData, interviewId }) => {
                                                     ? 'text-primary' 
                                                     : 'text-on-surface-variant/50 group-hover:text-primary/70'
                                             }`}
-                                            // Apply 'FILL' 1 if completed to make the icon solid
+                                            
                                             style={isCompleted ? { fontVariationSettings: "'FILL' 1" } : {}}
                                             >
                                                 {isCompleted ? 'check_circle' : 'radio_button_unchecked'}
