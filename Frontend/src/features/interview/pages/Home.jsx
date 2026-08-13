@@ -1,17 +1,19 @@
 import { useState } from 'react';
-import './Home.css'; // Import your separate CSS file
-
+import './Home.css';
+import { Link, useNavigate } from 'react-router-dom'; 
+import { useInterview } from '../hooks/useInterview.js';
 const Home = () => {
-    
+
+    const { loading: isLoading, generateReport } = useInterview();
+    const navigate = useNavigate();
+
+    // Form States
     const [jobDescription, setJobDescription] = useState('');
     const [selfDescription, setSelfDescription] = useState('');
     const [resumeFile, setResumeFile] = useState(null);
-    
-    
-    const [isLoading, setIsLoading] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
 
-    
+    // Drag & Drop Handlers
     const handleDragOver = (e) => {
         e.preventDefault();
         setIsDragging(true);
@@ -36,20 +38,20 @@ const Home = () => {
         }
     };
 
-    
+    // 2. Cleaned up Submit Handler
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!resumeFile) return alert("Please upload a resume first!");
 
-        setIsLoading(true);
-
-       
-
-        // Simulating the 2-second API loading animation for now
-        setTimeout(() => {
-            setIsLoading(false);
-            console.log("Form Submitted:", { jobDescription, selfDescription, resumeFile });
-        }, 2000);
+        // We use the 'resumeFile' directly from your state here!
+        const data = await generateReport({ jobDescription, selfDescription, resumeFile });
+        
+        // If the report generates successfully, navigate to it
+        if (data && data._id) {
+            navigate(`/interview/${data._id}`);
+        } else {
+            alert("Failed to generate report. Please try again.");
+        }
     };
 
     return (
@@ -62,7 +64,7 @@ const Home = () => {
                         <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                             <span className="material-symbols-outlined text-surface text-[20px]">analytics</span>
                         </div>
-                        <span className="font-headline-md text-2xl tracking-tight text-primary ml-3 font-medium">ReportAI</span>
+                        <span className="font-headline-md text-2xl tracking-tight text-primary ml-3 font-medium"><Link to = "/dashboard">Resume Optimizer</Link></span>
                     </div>
                     <nav className="flex items-center gap-8">
                         <a href="#" className="transition-colors uppercase text-primary font-medium text-sm">Dashboard</a>

@@ -6,7 +6,6 @@ const interviewReportModel = require("../models/interviewReport.model");
  * @description Controller to generate interview report based on user self description, resume and job description.
  */
 async function generateInterViewReportController(req, res) {
-    console.log("Hi 1")
     try {
        
         if (!req.file) {
@@ -17,7 +16,6 @@ async function generateInterViewReportController(req, res) {
         const resumeContentText = resumeContent.text;
 
         
-        console.log("Hi 2")
 
         if (!title || !selfDescription || !jobDescription) {
             return res.status(400).json({ 
@@ -25,14 +23,13 @@ async function generateInterViewReportController(req, res) {
             });
         }
 
-        console.log("Hi 3")
         const interViewReportByAi = await generateInterviewReport({
             resume: resumeContentText,
             selfDescription,
             jobDescription
         });
 
-        console.log("Hi 4")
+
         const interviewReport = await interviewReportModel.create({
             user: req.user.id,
             resume: resumeContentText,
@@ -58,4 +55,39 @@ async function generateInterViewReportController(req, res) {
     }
 }
 
-module.exports = { generateInterViewReportController };
+/**
+ * @description Controller to get interview report by interviewId.
+ */
+async function getInterviewReportByIdController(req, res) {
+
+    const { interviewId } = req.params
+
+    const interviewReport = await interviewReportModel.findOne({ _id: interviewId, user: req.user.id })
+
+    if (!interviewReport) {
+        return res.status(404).json({
+            message: "Interview report not found."
+        })
+    }
+
+    res.status(200).json({
+        message: "Interview report fetched successfully.",
+        interviewReport
+    })
+}
+
+
+/** 
+ * @description Controller to get all interview reports of logged in user.
+ */
+async function getAllInterviewReportsController(req, res) {
+    const interviewReports = await interviewReportModel.find({ user: req.user.id }).sort({ createdAt: -1 }).select("-resume -selfDescription -jobDescription -__v -technicalQuestions -behavioralQuestions -skillGaps -preparationPlan")
+
+    res.status(200).json({
+        message: "Interview reports fetched successfully.",
+        interviewReports
+    })
+}
+
+
+module.exports = { generateInterViewReportController, getInterviewReportByIdController, getAllInterviewReportsController };
